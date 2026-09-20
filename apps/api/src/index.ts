@@ -1,18 +1,22 @@
 import Fastify from "fastify";
 
+import { env } from "./config.js";
+import { checkDatabaseConnection, closeDatabase } from "./db/index.js";
+
 const app = Fastify();
 
 app.get("/health", async () => ({ status: "ok" }));
 
-const port = Number.parseInt(process.env.PORT ?? "3000", 10);
-
-if (!Number.isInteger(port) || port < 1 || port > 65_535) {
-  throw new Error("PORT must be an integer between 1 and 65535");
-}
+app.addHook("onClose", closeDatabase);
 
 try {
-  await app.listen({ host: "127.0.0.1", port });
+  await checkDatabaseConnection();
+  await app.listen({ host: "127.0.0.1", port: env.PORT });
 } catch (error) {
-  app.log.error(error);
-  process.exit(1);
+  console.error(
+    "Failed to start API. Ensure PostgreSQL is reachable and migrations are applied.",
+    error,
+  );
+  await app.close();
+  process.exitCode = 1;
 }
