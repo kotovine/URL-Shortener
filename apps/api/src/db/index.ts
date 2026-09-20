@@ -9,6 +9,8 @@ const pool = new Pool({ connectionString: env.DATABASE_URL });
 
 export const db = drizzle({ client: pool, schema });
 
+export type Database = typeof db;
+
 export async function checkDatabaseConnection(): Promise<void> {
   await db.select({ id: links.id }).from(links).limit(1);
 }

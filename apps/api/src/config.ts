@@ -16,6 +16,7 @@ const environmentSchema = z.object({
       return protocol === "postgres:" || protocol === "postgresql:";
     }, "must be a PostgreSQL connection URL"),
   PORT: z.coerce.number().int().min(1).max(65_535).default(3000),
+  PUBLIC_BASE_URL: z.url({ protocol: /^https?$/ }).optional(),
 });
 
 const result = environmentSchema.safeParse(process.env);
@@ -30,4 +31,10 @@ if (!result.success) {
   throw new Error(`Invalid environment configuration: ${details}`);
 }
 
-export const env = result.data;
+const publicBaseUrl =
+  result.data.PUBLIC_BASE_URL ?? `http://localhost:${result.data.PORT}`;
+
+export const env = {
+  ...result.data,
+  PUBLIC_BASE_URL: `${publicBaseUrl.replace(/\/+$/, "")}/`,
+};

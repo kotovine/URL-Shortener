@@ -87,9 +87,39 @@ curl http://127.0.0.1:3000/health
 }
 ```
 
+### Создание короткой ссылки
+
+```bash
+curl --request POST http://127.0.0.1:3000/api/links \
+  --header 'content-type: application/json' \
+  --data '{"url":"https://example.com/some/long/path"}'
+```
+
+Успешный запрос возвращает `201 Created`:
+
+```json
+{
+  "code": "a8Fk2Qp",
+  "url": "https://example.com/some/long/path",
+  "shortUrl": "http://localhost:3000/a8Fk2Qp"
+}
+```
+
+Значение `PUBLIC_BASE_URL` задаёт публичный базовый адрес, используемый в
+`shortUrl` и OpenAPI-документации.
+
+### OpenAPI
+
+После запуска API доступны:
+
+- Swagger UI: `http://127.0.0.1:3000/documentation`;
+- OpenAPI JSON: `http://127.0.0.1:3000/documentation/json`;
+- OpenAPI YAML: `http://127.0.0.1:3000/documentation/yaml`.
+
 ## Проверки
 
 ```bash
+pnpm test
 pnpm typecheck
 pnpm lint
 pnpm format:check

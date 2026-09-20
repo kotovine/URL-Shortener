@@ -19,6 +19,7 @@
     "db:check": "pnpm --filter @url-shortener/api db:check",
     "build": "pnpm -r --if-present build",
     "lint": "eslint .",
+    "test": "pnpm -r --if-present test",
     "typecheck": "pnpm -r --if-present typecheck",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
