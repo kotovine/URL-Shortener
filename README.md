@@ -6,6 +6,7 @@ Monorepo для сервиса коротких ссылок. На текуще�
 
 - Node.js 22 LTS
 - pnpm 11 или новее
+- Docker с поддержкой Docker Compose
 
 ## Установка
 
@@ -13,9 +14,51 @@ Monorepo для сервиса коротких ссылок. На текуще�
 pnpm install
 ```
 
+Создайте локальный файл окружения:
+
+```bash
+cp .env.example .env
+```
+
+Замените демонстрационный пароль в `.env`. Значения `POSTGRES_USER`,
+`POSTGRES_PASSWORD` и `POSTGRES_DB` должны совпадать с соответствующими частями
+`DATABASE_URL`.
+
+## База данных
+
+Запустить локальный PostgreSQL и дождаться его готовности:
+
+```bash
+pnpm db:up
+```
+
+Применить все сохранённые migrations и проверить подключение к таблице `links`:
+
+```bash
+pnpm db:migrate
+pnpm db:check
+```
+
+Остановить контейнер, сохранив данные в Docker volume:
+
+```bash
+pnpm db:down
+```
+
+После изменения Drizzle-схемы создать следующую migration и применить её:
+
+```bash
+pnpm db:generate
+pnpm db:migrate
+```
+
+Сгенерированные SQL- и meta-файлы из `apps/api/drizzle` должны сохраняться в
+репозитории. API не применяет migrations автоматически и завершает запуск с
+ошибкой, если PostgreSQL или таблица `links` недоступны.
+
 ## Разработка
 
-Запустить оба приложения:
+После запуска PostgreSQL и применения migrations запустить оба приложения:
 
 ```bash
 pnpm dev
@@ -68,5 +111,3 @@ apps/
 packages/
   shared/    Общие контракты и утилиты
 ```
-
-На этапе bootstrap база данных, сокращение ссылок и переменные окружения ещё не нужны.
